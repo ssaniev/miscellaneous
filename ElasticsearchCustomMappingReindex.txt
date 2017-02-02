@@ -1,0 +1,34 @@
+Create new index with strict mapping:
+
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: c45b87e1-118f-b532-b5ab-2bb8d023c218" -d '{
+  "settings" : {
+      "number_of_shards" : 1
+  },
+  "mappings": {
+    "user": { 
+      "_all":       { "enabled": false  }, 
+      "dynamic": "strict",
+      "properties": { 
+        "title":    { "type": "string"  },
+        "name":     { "type": "string"  }
+      }
+    }
+  }
+}' "http://localhost:9200/mapping2b/"
+
+
+
+Reindex old index to the new one with custom mapping script
+Example below will copy mapping2a index to mapping2b index while mapping 'name' field from mapping2a to 'firstname' field in mapping2b:
+
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: bf3a7a64-4c09-06ac-208b-dcaafbcb238f" -d '{
+  "source": {
+    "index": "mapping2a"
+  },
+  "dest": {
+    "index": "mapping2b"
+  },
+  "script": {
+    "inline": "ctx._source.firstname = ctx._source.remove(\"name\")"
+  }
+}' "http://localhost:9200/_reindex"
