@@ -32,3 +32,20 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H
     "inline": "ctx._source.firstname = ctx._source.remove(\"name\")"
   }
 }' "http://localhost:9200/_reindex"
+
+Add index to an alias:
+curl -XPOST 'http://localhost:9200/_aliases' -d '
+{
+    "actions" : [
+        { "add" : { "index" : "test1", "alias" : "alias1" } }
+    ]
+}'
+
+remove old index, and add new index to alias:
+curl -XPOST 'http://localhost:9200/_aliases' -d '
+{
+    "actions" : [
+        { "remove" : { "index" : "test1", "alias" : "alias1" } },
+        { "add" : { "index" : "test2", "alias" : "alias1" } }
+    ]
+}'
